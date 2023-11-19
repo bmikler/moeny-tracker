@@ -10,7 +10,7 @@ class InMemoryExpenseRepository : ExpenseRepository {
     private val expenses: MutableList<Expense> = mutableListOf()
 
     private val categories: List<Category> = listOf(
-        Category(1, "Food"), Category(2, "Gas")
+//        Category(1, "Food"), Category(2, "Gas")
     )
 
     override suspend fun saveExpense(expense: Expense) {
