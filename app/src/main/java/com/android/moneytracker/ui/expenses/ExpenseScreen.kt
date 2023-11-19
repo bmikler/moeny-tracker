@@ -6,6 +6,7 @@ import androidx.annotation.RequiresApi
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,8 +15,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.magnifier
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.Card
@@ -31,11 +32,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.android.moneytracker.R
 import com.android.moneytracker.model.Category
 import com.android.moneytracker.model.CostType
@@ -48,7 +52,7 @@ import java.time.LocalDate
 
 
 object ExpenseDestination : NavigationDestination {
-    override val route: String = "spending"
+    override val route: String = "expenses"
     override val titleRes: Int = R.string.title_expense
 
 }
@@ -64,49 +68,56 @@ fun ExpenseScreen(
         topBar = {
             MoneyTrackerTopAppBar(
                 title = stringResource(id = ExpenseDestination.titleRes),
-                canNavigateBack = true,
+                canNavigateBack = false,
                 navigateUp = { }
             )
         }) { innerPadding ->
         ExpenseBody(
+            categories = listOf(
+                Category(1, "testCat1", CostType.CONSTANT),
+                Category(2, "testCat2", CostType.CONSTANT),
+                Category(3, "testCat3", CostType.CONSTANT),
+            ),
             modifier = modifier
                 .padding(innerPadding)
                 .fillMaxSize()
-
         )
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
-@Composable
-fun ExpenseBody(modifier: Modifier = Modifier) {
-    CategoriesList(
-        categories = listOf(
-            Category(1, "Food", CostType.CONSTANT),
-            Category(2, "Gas", CostType.CONSTANT),
-            Category(3, "Cloths", CostType.CONSTANT)
-        ),
-        modifier = modifier)
-}
 
-@RequiresApi(Build.VERSION_CODES.O)
+@SuppressLint("NewApi")
 @Composable
-fun CategoriesList(
+fun ExpenseBody(
     categories: List<Category>,
     modifier: Modifier = Modifier
 ) {
-
-    Column(modifier = modifier) {
-        categories.forEach{ ExpandableCategory(category = it.name)}
+    Column(
+        modifier = modifier
+    ) {
+        categories.forEach {
+            ExpandableCategory(
+                categoryName = it.name,
+                alreadySpent = BigDecimal.ONE,
+                leftToSpend = BigDecimal.ONE,
+                expenses = listOf(
+                    Expense(1, "test1", BigDecimal.valueOf(25.50), LocalDate.of(2023, 10, 11), 1),
+                    Expense(2, "test2", BigDecimal.valueOf(25.50), LocalDate.of(2023, 10, 11), 1),
+                    Expense(3, "tes3", BigDecimal.valueOf(25.50), LocalDate.of(2023, 10, 11), 1)
+                )
+            )
+        }
     }
-
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExpandableCategory(
-    category: String,
+    categoryName: String,
+    alreadySpent: BigDecimal,
+    leftToSpend: BigDecimal,
+    expenses: List<Expense>,
     modifier: Modifier = Modifier
 ) {
     var expandedState by remember { mutableStateOf(false) }
@@ -130,23 +141,62 @@ fun ExpandableCategory(
                 .fillMaxWidth()
                 .padding(12.dp)
         ) {
-            Row {
-                Text(
-                    text = category,
-                    fontWeight = FontWeight.Bold
-                )
+
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth().padding(6.dp)
+            ) {
+                CategoryHeader(categoryName, alreadySpent, leftToSpend)
+                IconButton(onClick = { /*TODO*/ }, modifier = Modifier.background(Color.LightGray)) {
+                    Icon(
+                        imageVector = Icons.Filled.Add,
+                        contentDescription = stringResource(R.string.btn_add)
+                    )
+                }
+
             }
 
             if (expandedState) {
                 ExpenseList(
-                    expenses = listOf(
-                        Expense(1, "McDonalds", BigDecimal.valueOf(25, 51), LocalDate.now(), 1),
-                        Expense(2, "Restaurant", BigDecimal.valueOf(100, 51), LocalDate.now(), 1)
-                    )
+                    expenses = expenses
                 )
             }
         }
     }
+}
+
+@Composable
+fun CategoryHeader(
+    categoryName: String,
+    alreadySpent: BigDecimal,
+    leftToSpend: BigDecimal
+) {
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier.fillMaxWidth(0.9f)
+    ) {
+
+        Row {
+            Text(
+                text = categoryName,
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(6.dp)
+            )
+        }
+
+        Row(
+            horizontalArrangement = Arrangement.SpaceAround,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(text = "Already spent $alreadySpent")
+            Text(text = "Left to spend $leftToSpend")
+        }
+    }
+
 }
 
 
@@ -157,30 +207,27 @@ fun ExpenseList(
 
     LazyColumn {
         items(expenses) { item ->
-            Row {
-                Text(text = item.description)
-            }
+            ExpenseItem(item.description, item.value)
         }
     }
 }
 
-
-//    Column(
-//        horizontalAlignment = Alignment.CenterHorizontally,
-//        modifier = Modifier.fillMaxWidth()
-//    ) {
-//
-//        Text(text = categoryName, fontSize = 21.sp)
-//
-//        Row(
-//            horizontalArrangement = Arrangement.SpaceEvenly,
-//            modifier = Modifier.fillMaxWidth()
-//        ) {
-//            Text(text = "Already spent $alreadySpent")
-//            Text(text = "Left to spend $leftToSpent")
-//        }
-//
-//    }
+@Composable
+fun ExpenseItem(
+    description: String,
+    value: BigDecimal
+) {
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(12.dp)
+    ) {
+        Text(text = description)
+        Text(text = "$value PLN")
+    }
+}
 
 
 @Composable
@@ -203,24 +250,31 @@ fun ExpenseNavigation(
 
         Text(text = date)
 
-        IconButton(onClick = navigateNext) {
+        IconButton(
+            onClick = navigateNext,
+        ) {
             Icon(
                 imageVector = Icons.Filled.ArrowForward,
-                contentDescription = stringResource(R.string.btn_back)
+                contentDescription = stringResource(R.string.btn_back),
             )
         }
     }
 }
 
-@SuppressLint("NewApi")
+
 @Preview(showBackground = true)
 @Composable
-fun ExpanseScreenPreview() {
-    ExpenseScreen()
+fun ExpandableCategoryPreview() {
+    ExpandableCategory(
+        categoryName = "Food",
+        alreadySpent = BigDecimal.valueOf(25.55),
+        leftToSpend = BigDecimal.valueOf(25.55),
+        expenses = listOf()
+    )
 }
 
-//@Preview(showBackground = true)
-//@Composable
-//fun ExpenseNavigationPreview() {
-//    ExpenseNavigation(date = "10-10-2022")
-//}
+@Preview(showBackground = true)
+@Composable
+fun ExpanseItemPreview() {
+    ExpenseItem(description = "test", value = BigDecimal.valueOf(2023.55))
+}
