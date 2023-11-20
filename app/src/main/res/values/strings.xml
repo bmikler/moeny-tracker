@@ -3,4 +3,6 @@
     <string name="title_expense">expense\n</string>
     <string name="btn_back">back</string>
     <string name="btn_add">Add\n</string>
+    <string name="title_expense_entry">Add expense</string>
+    <string name="save_action">Save</string>
 </resources>
