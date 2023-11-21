@@ -71,10 +71,7 @@ fun ExpenseScreen(
             )
         }) { innerPadding ->
         ExpenseBody(
-            categories = listOf(
-                Category(1, "1", BigDecimal.ZERO, CostType.IRREGULAR),
-                Category(2, "2", BigDecimal.ZERO, CostType.IRREGULAR)
-            ),
+            expensesWithCategories = viewModel.getData(LocalDate.now()),
             addExpense = navigateToAddExpanse,
             modifier = modifier
                 .padding(innerPadding)
@@ -87,23 +84,19 @@ fun ExpenseScreen(
 @SuppressLint("NewApi")
 @Composable
 fun ExpenseBody(
-    categories: List<Category>,
+    expensesWithCategories: Map<Category, List<Expense>>,
     addExpense: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier
     ) {
-        categories.forEach {
+        expensesWithCategories.forEach {
             ExpandableCategory(
-                category = it,
+                category = it.key,
                 alreadySpent = BigDecimal.ONE,
                 leftToSpend = BigDecimal.ONE,
-                expenses = listOf(
-                    Expense(1, "test1", BigDecimal.valueOf(25.50), LocalDate.of(2023, 10, 11), 1),
-                    Expense(2, "test2", BigDecimal.valueOf(25.50), LocalDate.of(2023, 10, 11), 1),
-                    Expense(3, "tes3", BigDecimal.valueOf(25.50), LocalDate.of(2023, 10, 11), 1)
-                ),
+                expenses = it.value,
                 addExpense = addExpense
             )
         }
@@ -163,7 +156,7 @@ fun ExpandableCategory(
 
             }
 
-            if (expandedState) {
+            if (expandedState && expenses.isNotEmpty()) {
                 ExpenseList(
                     expenses = expenses
                 )
