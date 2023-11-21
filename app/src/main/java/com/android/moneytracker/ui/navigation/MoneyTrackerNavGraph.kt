@@ -20,13 +20,16 @@ fun MoneyTrackerNavHost(
         navController = navController, startDestination = ExpenseDestination.route
     ) {
         composable(route = ExpenseDestination.route) {
-            ExpenseScreen()
+            ExpenseScreen(navigateToAddExpanse = { navController.navigate("${ExpenseEntryDestination.route}/${it}") })
         }
         composable(route = ExpenseEntryDestination.routeWithArgs,
             arguments = listOf(navArgument(ExpenseEntryDestination.itemIdArg) {
                 type = NavType.IntType
-            })) {
-            ExpenseEntryScreen()
+            })
+        ) {
+            ExpenseEntryScreen(
+                navigateBack = { navController.popBackStack() }
+            )
         }
     }
 }

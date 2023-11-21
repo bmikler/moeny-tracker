@@ -28,6 +28,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.android.moneytracker.data.repository.InMemoryExpenseRepository
+import com.android.moneytracker.infrastructure.AppViewModelProvider
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.util.Currency
@@ -44,8 +45,8 @@ object ExpenseEntryDestination : NavigationDestination {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExpenseEntryScreen(
-    viewModel: ExpenseEntryViewModel = ExpenseEntryViewModel(InMemoryExpenseRepository()),
-    navigateBack: () -> Unit = {},
+    viewModel: ExpenseEntryViewModel = viewModel(factory = AppViewModelProvider.Factory ),
+    navigateBack: () -> Unit,
     canNavigateBack: Boolean = true,
 ) {
 
@@ -106,7 +107,7 @@ private fun ExpenseEntryBody(
         )
 
         OutlinedTextField(
-            value = entryDetails.value.toString(),
+            value = entryDetails.value,
             onValueChange = {
                 onEntryValueChange(entryDetails.copy(value = it))
             },
@@ -128,9 +129,9 @@ private fun ExpenseEntryBody(
 }
 
 
-@Preview(showBackground = true)
-@Composable
-private fun ExpenseEntryScreenPreview() {
-    ExpenseEntryScreen()
-}
+//@Preview(showBackground = true)
+//@Composable
+//private fun ExpenseEntryScreenPreview() {
+//    ExpenseEntryScreen()
+//}
 

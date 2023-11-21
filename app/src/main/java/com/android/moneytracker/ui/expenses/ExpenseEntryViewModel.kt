@@ -55,8 +55,7 @@ data class EntryDetails(
 )
 
 @RequiresApi(Build.VERSION_CODES.O)
-fun EntryDetails.toEntity() =
-    Expense(1, description, value.toBigDecimalSafe(), LocalDate.now(), categoryId)
+fun EntryDetails.toEntity() = Expense(1, description, value.toBigDecimalSafe(), LocalDate.now(), categoryId)
 
 fun String.toBigDecimalSafe(): BigDecimal =
     this.replace(",", ".").toBigDecimalOrNull() ?: BigDecimal.ZERO

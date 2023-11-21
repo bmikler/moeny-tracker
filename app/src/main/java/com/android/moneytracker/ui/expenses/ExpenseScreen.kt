@@ -36,7 +36,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.android.moneytracker.R
+import com.android.moneytracker.infrastructure.AppViewModelProvider
 import com.android.moneytracker.model.Category
 import com.android.moneytracker.model.CostType
 import com.android.moneytracker.model.Expense
@@ -55,7 +57,9 @@ object ExpenseDestination : NavigationDestination {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExpenseScreen(
-    modifier: Modifier = Modifier,
+    viewModel: ExpenseViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    navigateToAddExpanse: (Int) -> Unit,
+    modifier: Modifier = Modifier
 ) {
 
     Scaffold(
@@ -68,10 +72,10 @@ fun ExpenseScreen(
         }) { innerPadding ->
         ExpenseBody(
             categories = listOf(
-                Category(1, "testCat1", CostType.CONSTANT),
-                Category(2, "testCat2", CostType.CONSTANT),
-                Category(3, "testCat3", CostType.CONSTANT),
+                Category(1, "1", BigDecimal.ZERO, CostType.IRREGULAR),
+                Category(2, "2", BigDecimal.ZERO, CostType.IRREGULAR)
             ),
+            addExpense = navigateToAddExpanse,
             modifier = modifier
                 .padding(innerPadding)
                 .fillMaxSize()
@@ -84,6 +88,7 @@ fun ExpenseScreen(
 @Composable
 fun ExpenseBody(
     categories: List<Category>,
+    addExpense: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -91,14 +96,15 @@ fun ExpenseBody(
     ) {
         categories.forEach {
             ExpandableCategory(
-                category = it.name,
+                category = it,
                 alreadySpent = BigDecimal.ONE,
                 leftToSpend = BigDecimal.ONE,
                 expenses = listOf(
                     Expense(1, "test1", BigDecimal.valueOf(25.50), LocalDate.of(2023, 10, 11), 1),
                     Expense(2, "test2", BigDecimal.valueOf(25.50), LocalDate.of(2023, 10, 11), 1),
                     Expense(3, "tes3", BigDecimal.valueOf(25.50), LocalDate.of(2023, 10, 11), 1)
-                )
+                ),
+                addExpense = addExpense
             )
         }
     }
@@ -140,10 +146,15 @@ fun ExpandableCategory(
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth().padding(6.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(6.dp)
             ) {
                 CategoryHeader(category.name, alreadySpent, leftToSpend)
-                IconButton(onClick = { addExpense(category.id) }, modifier = Modifier.background(Color.LightGray)) {
+                IconButton(
+                    onClick = { addExpense(category.id) },
+                    modifier = Modifier.background(Color.LightGray)
+                ) {
                     Icon(
                         imageVector = Icons.Filled.Add,
                         contentDescription = stringResource(R.string.btn_add)
@@ -257,16 +268,16 @@ private fun ExpenseNavigationPreview(
 }
 
 
-@Preview(showBackground = true)
-@Composable
-private fun ExpandableCategoryPreview() {
-    ExpandableCategory(
-        category = "Food",
-        alreadySpent = BigDecimal.valueOf(25.55),
-        leftToSpend = BigDecimal.valueOf(25.55),
-        expenses = listOf()
-    )
-}
+//@Preview(showBackground = true)
+//@Composable
+//private fun ExpandableCategoryPreview() {
+//    ExpandableCategory(
+//        category = Category(1, "test", CostType.IRREGULAR),
+//        alreadySpent = BigDecimal.valueOf(25.55),
+//        leftToSpend = BigDecimal.valueOf(25.55),
+//        expenses = listOf()
+//    )
+//}
 
 @Preview(showBackground = true)
 @Composable
