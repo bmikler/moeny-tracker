@@ -1,6 +1,7 @@
 package com.android.moneytracker.ui.expenses
 
-import android.util.Log
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,12 +26,9 @@ import com.android.moneytracker.ui.navigation.NavigationDestination
 
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.android.moneytracker.data.repository.InMemoryExpenseRepository
 import com.android.moneytracker.infrastructure.AppViewModelProvider
 import kotlinx.coroutines.launch
-import java.math.BigDecimal
 import java.util.Currency
 import java.util.Locale
 
@@ -42,15 +40,14 @@ object ExpenseEntryDestination : NavigationDestination {
     val routeWithArgs = "$route/{$itemIdArg}"
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExpenseEntryScreen(
-    viewModel: ExpenseEntryViewModel = viewModel(factory = AppViewModelProvider.Factory ),
+    viewModel: ExpenseEntryViewModel = viewModel(factory = AppViewModelProvider.Factory),
     navigateBack: () -> Unit,
     canNavigateBack: Boolean = true,
 ) {
-
-    val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
         topBar = {
@@ -67,10 +64,8 @@ fun ExpenseEntryScreen(
             viewModel.entryUiState,
             viewModel::updateUiState,
             onSave = {
-                coroutineScope.launch {
-                    viewModel.saveEntry()
-                    navigateBack()
-                }
+                viewModel.saveEntry()
+                navigateBack()
             },
             modifier = Modifier
                 .padding(innerPadding)

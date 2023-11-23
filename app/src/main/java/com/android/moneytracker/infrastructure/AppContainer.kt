@@ -1,8 +1,9 @@
 package com.android.moneytracker.infrastructure
 
 import android.content.Context
+import com.android.moneytracker.data.MoneyTrackerDatabase
 import com.android.moneytracker.data.repository.ExpenseRepository
-import com.android.moneytracker.data.repository.InMemoryExpenseRepository
+import com.android.moneytracker.data.repository.OfflineExpenseRepository
 
 interface AppContainer {
     val expenseRepository: ExpenseRepository
@@ -10,6 +11,6 @@ interface AppContainer {
 
 class AppDataContainer(private val context: Context) : AppContainer {
     override val expenseRepository: ExpenseRepository by lazy {
-        InMemoryExpenseRepository()
+        OfflineExpenseRepository(MoneyTrackerDatabase.getDatabase(context).expenseDao())
     }
 }

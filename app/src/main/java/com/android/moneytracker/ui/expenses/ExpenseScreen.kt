@@ -24,6 +24,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -62,6 +63,8 @@ fun ExpenseScreen(
     modifier: Modifier = Modifier
 ) {
 
+    val uiState by viewModel.expenseUiState.collectAsState()
+
     Scaffold(
         topBar = {
             MoneyTrackerTopAppBar(
@@ -71,7 +74,7 @@ fun ExpenseScreen(
             )
         }) { innerPadding ->
         ExpenseBody(
-            expensesWithCategories = viewModel.getData(LocalDate.now()),
+            expensesWithCategories = uiState.expensesByCategory,
             addExpense = navigateToAddExpanse,
             modifier = modifier
                 .padding(innerPadding)

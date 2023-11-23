@@ -8,8 +8,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.android.moneytracker.data.repository.ExpenseRepository
 import com.android.moneytracker.model.Expense
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.time.LocalDate
 
@@ -28,11 +31,15 @@ class ExpenseEntryViewModel(
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    suspend fun saveEntry() {
+    fun saveEntry() {
         if (validateInput()) {
             val expense = entryUiState.entryDetails.toEntity()
             Log.d("Saving expense", expense.toString())
-            expanseRepository.saveExpense(expense)
+
+            viewModelScope.launch(Dispatchers.IO) {
+                expanseRepository.saveExpense(expense)
+            }
+
         }
     }
 
@@ -55,7 +62,7 @@ data class EntryDetails(
 )
 
 @RequiresApi(Build.VERSION_CODES.O)
-fun EntryDetails.toEntity() = Expense(1, description, value.toBigDecimalSafe(), LocalDate.now(), categoryId)
+fun EntryDetails.toEntity() = Expense( description = description, value = value.toBigDecimalSafe(), timestamp = LocalDate.now(), categoryId = categoryId)
 
 fun String.toBigDecimalSafe(): BigDecimal =
     this.replace(",", ".").toBigDecimalOrNull() ?: BigDecimal.ZERO
