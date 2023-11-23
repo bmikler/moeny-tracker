@@ -5,6 +5,7 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -119,53 +120,42 @@ fun ExpandableCategory(
 ) {
     var expandedState by remember { mutableStateOf(false) }
 
-    Card(
-        modifier = modifier
+    Column(
+        modifier = Modifier
             .fillMaxWidth()
-            .animateContentSize(
-                animationSpec = tween(
-                    delayMillis = 10,
-                    easing = LinearOutSlowInEasing
-                )
-            ),
-        shape = Shapes.medium,
-        onClick = {
-            expandedState = !expandedState
-        }
+            .padding(12.dp)
     ) {
-        Column(
+
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp)
-        ) {
-
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(6.dp)
-            ) {
-                CategoryHeader(category.name, alreadySpent, leftToSpend)
-                IconButton(
-                    onClick = { addExpense(category.id) },
-                    modifier = Modifier.background(Color.LightGray)
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Add,
-                        contentDescription = stringResource(R.string.btn_add)
-                    )
+                .clickable {
+                    expandedState = !expandedState
                 }
-
-            }
-
-            if (expandedState && expenses.isNotEmpty()) {
-                ExpenseList(
-                    expenses = expenses
+                .fillMaxWidth()
+                .padding(6.dp)
+        ) {
+            CategoryHeader(category.name, alreadySpent, leftToSpend)
+            IconButton(
+                onClick = { addExpense(category.id) },
+                modifier = Modifier.background(Color.LightGray)
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Add,
+                    contentDescription = stringResource(R.string.btn_add)
                 )
             }
+
+        }
+
+        if (expandedState && expenses.isNotEmpty()) {
+            ExpenseList(
+                expenses = expenses
+            )
         }
     }
+
 }
 
 @Composable
@@ -223,6 +213,7 @@ private fun ExpenseItem(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
+            .clickable { }
             .fillMaxWidth()
             .padding(12.dp)
     ) {
