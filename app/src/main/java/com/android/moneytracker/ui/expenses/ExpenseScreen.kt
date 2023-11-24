@@ -30,13 +30,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.android.moneytracker.R
 import com.android.moneytracker.infrastructure.AppViewModelProvider
-import com.android.moneytracker.model.Category
 import com.android.moneytracker.model.CostType
 import com.android.moneytracker.model.Expense
 import com.android.moneytracker.ui.MoneyTrackerTopAppBar
@@ -93,7 +91,7 @@ fun ExpenseBody(
     date: String,
     nextDate: () -> Unit,
     previousDate: () -> Unit,
-    expensesWithCategories: Map<Category, List<Expense>>,
+    expensesWithCategories: Map<CategoryUi, List<Expense>>,
     addExpense: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -108,8 +106,6 @@ fun ExpenseBody(
         expensesWithCategories.forEach {
             ExpandableCategory(
                 category = it.key,
-                alreadySpent = BigDecimal.ONE,
-                leftToSpend = BigDecimal.ONE,
                 expenses = it.value,
                 addExpense = addExpense
             )
@@ -120,9 +116,7 @@ fun ExpenseBody(
 
 @Composable
 fun ExpandableCategory(
-    category: Category,
-    alreadySpent: BigDecimal,
-    leftToSpend: BigDecimal,
+    category: CategoryUi,
     expenses: List<Expense>,
     addExpense: (Int) -> Unit,
     modifier: Modifier = Modifier
@@ -145,7 +139,7 @@ fun ExpandableCategory(
                 .fillMaxWidth()
                 .padding(6.dp)
         ) {
-            CategoryHeader(category.name, alreadySpent, leftToSpend)
+            CategoryHeader(category)
             IconButton(
                 onClick = { addExpense(category.id) },
                 modifier = Modifier.background(Color.LightGray)
@@ -169,9 +163,7 @@ fun ExpandableCategory(
 
 @Composable
 private fun CategoryHeader(
-    categoryName: String,
-    alreadySpent: BigDecimal,
-    leftToSpend: BigDecimal
+    category: CategoryUi
 ) {
 
     Column(
@@ -182,7 +174,7 @@ private fun CategoryHeader(
 
         Row {
             Text(
-                text = categoryName,
+                text = category.name,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(6.dp)
@@ -193,8 +185,20 @@ private fun CategoryHeader(
             horizontalArrangement = Arrangement.SpaceAround,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(text = "Already spent $alreadySpent")
-            Text(text = "Left to spend $leftToSpend")
+            Column {
+                Text(text = stringResource(R.string.label_already_spent))
+                Text(text = "${category.alreadySpent} PLN")
+            }
+
+            Column {
+
+                if (category.type == CostType.MONTHLY) {
+
+                    Text(text = stringResource(R.string.label_left_to_spend))
+                    Text(text = "${category.leftToSpent} PLN")
+                }
+
+            }
         }
     }
 
@@ -278,16 +282,16 @@ private fun ExpenseNavigation(
 //}
 
 
-@Preview(showBackground = true)
-@Composable
-private fun ExpenseBodyPreview() {
-    ExpenseBody(
-        "10 - 2022",
-        {},
-        {},
-        mapOf(Category(1, "test", BigDecimal.TEN, CostType.CONSTANT) to listOf()),
-        {})
-}
+//@Preview(showBackground = true)
+//@Composable
+//private fun ExpenseBodyPreview() {
+//    ExpenseBody(
+//        "10 - 2022",
+//        {},
+//        {},
+//        mapOf(Category(1, "test", BigDecimal.TEN, CostType.CONSTANT) to listOf()),
+//        {})
+//}
 
 //@Preview(showBackground = true)
 //@Composable

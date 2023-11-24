@@ -4,15 +4,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.moneytracker.data.repository.ExpenseRepository
 import com.android.moneytracker.model.Category
+import com.android.moneytracker.model.CostType
 import com.android.moneytracker.model.Expense
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
+import java.math.BigDecimal
 import java.time.LocalDate
 
 class ExpenseViewModel(
@@ -25,11 +24,9 @@ class ExpenseViewModel(
 
     val expenseUiState: StateFlow<ExpenseUiState> =
         combine(categories, expenses) { categoriesList, expensesList ->
-            categoriesList.associateWith { category ->
-                expensesList.filter { expense -> expense.categoryId == category.id }
-            }
+            categoriesList.associateWith { category -> expensesList.filter { expense -> expense.categoryId == category.id } }
         }
-            .map { ExpenseUiState(date = sharedDateViewModel.date, expensesByCategory = it) }
+            .map { mapToExpenseUiState(it) }
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
@@ -50,14 +47,35 @@ class ExpenseViewModel(
     }
 
     private fun getDateRange(): Pair<LocalDate, LocalDate> = with(sharedDateViewModel.date) {
-            LocalDate.of(year, month, 1) to LocalDate.of(year, month, lengthOfMonth())
-        }
+        LocalDate.of(year, month, 1) to LocalDate.of(year, month, lengthOfMonth())
+    }
 
 
+    private fun mapToExpenseUiState(expensesWithCategories: Map<Category, List<Expense>>): ExpenseUiState {
+        return ExpenseUiState(date = sharedDateViewModel.date,
+            expensesByCategory = expensesWithCategories.mapKeys { (category, expenses) ->
+                val alreadySpent = expenses.sumOf { it.value }
+                CategoryUi(
+                    category.id,
+                    category.name,
+                    alreadySpent,
+                    category.spendingLimit.minus(alreadySpent),
+                    category.type
+                )
+            })
+    }
 }
+
 
 data class ExpenseUiState(
     val date: LocalDate = LocalDate.now(),
-    val expensesByCategory: Map<Category, List<Expense>> = mapOf()
+    val expensesByCategory: Map<CategoryUi, List<Expense>> = mapOf()
 )
 
+data class CategoryUi(
+    val id: Int,
+    val name: String,
+    val alreadySpent: BigDecimal,
+    val leftToSpent: BigDecimal,
+    val type: CostType
+)

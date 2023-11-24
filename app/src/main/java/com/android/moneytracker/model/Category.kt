@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey
 import java.math.BigDecimal
 
 enum class CostType {
-    IRREGULAR, CONSTANT
+    MONTHLY, ANNUAL
 }
 
 @Entity(tableName = "categories")

@@ -15,16 +15,4 @@ class OfflineExpenseRepository(private val expenseDao: ExpenseDao) : ExpenseRepo
     override fun getExpensesForDate(dateRange: Pair<LocalDate, LocalDate>): Flow<List<Expense>> = expenseDao.getExpensesForDate(dateRange.first, dateRange.second)
 
 
-//    override fun getCategoriesAndExpenses(): Flow<Map<Category, List<Expense>>> = expenseDao.getExpensesByCategory()
-////        val expenses = expenseDao.getExpensesByCategory(range.first, range.second)
-////
-////        return expenseDao.getCategories()
-////            .associateWith { category ->
-////                expenses
-////                    .filter { expense -> category.id == expense.categoryId }
-////            }
-//
-//        expenseDao.getExpensesForDate(range.first, range.second)
-//    }
-
 }
