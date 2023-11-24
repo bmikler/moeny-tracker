@@ -1,9 +1,5 @@
 package com.android.moneytracker.ui.expenses
 
-import android.annotation.SuppressLint
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,7 +14,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -46,9 +41,7 @@ import com.android.moneytracker.model.CostType
 import com.android.moneytracker.model.Expense
 import com.android.moneytracker.ui.MoneyTrackerTopAppBar
 import com.android.moneytracker.ui.navigation.NavigationDestination
-import com.android.moneytracker.ui.theme.Shapes
 import java.math.BigDecimal
-import java.time.LocalDate
 
 
 object ExpenseDestination : NavigationDestination {
@@ -60,6 +53,7 @@ object ExpenseDestination : NavigationDestination {
 @Composable
 fun ExpenseScreen(
     viewModel: ExpenseViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    reloadScreen: () -> Unit,
     navigateToAddExpanse: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -75,6 +69,15 @@ fun ExpenseScreen(
             )
         }) { innerPadding ->
         ExpenseBody(
+            date = "${uiState.date.monthValue} - ${uiState.date.year}",
+            nextDate = {
+                viewModel.nextDate()
+                reloadScreen()
+            },
+            previousDate = {
+                viewModel.previousDate()
+                reloadScreen()
+            },
             expensesWithCategories = uiState.expensesByCategory,
             addExpense = navigateToAddExpanse,
             modifier = modifier
@@ -85,16 +88,23 @@ fun ExpenseScreen(
 }
 
 
-@SuppressLint("NewApi")
 @Composable
 fun ExpenseBody(
+    date: String,
+    nextDate: () -> Unit,
+    previousDate: () -> Unit,
     expensesWithCategories: Map<Category, List<Expense>>,
     addExpense: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
+
+
     Column(
         modifier = modifier
     ) {
+
+        ExpenseNavigation(nextDate, previousDate, date)
+
         expensesWithCategories.forEach {
             ExpandableCategory(
                 category = it.key,
@@ -108,7 +118,6 @@ fun ExpenseBody(
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExpandableCategory(
     category: Category,
@@ -121,9 +130,9 @@ fun ExpandableCategory(
     var expandedState by remember { mutableStateOf(false) }
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .padding(12.dp)
+            .padding(6.dp)
     ) {
 
         Row(
@@ -224,15 +233,17 @@ private fun ExpenseItem(
 
 
 @Composable
-private fun ExpenseNavigationPreview(
-    navigateNext: () -> Unit = {},
-    navigatePrevious: () -> Unit = {},
+private fun ExpenseNavigation(
+    navigateNext: () -> Unit,
+    navigatePrevious: () -> Unit,
     date: String
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceAround,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(6.dp)
     ) {
         IconButton(onClick = navigatePrevious) {
             Icon(
@@ -266,8 +277,20 @@ private fun ExpenseNavigationPreview(
 //    )
 //}
 
+
 @Preview(showBackground = true)
 @Composable
-private fun ExpanseItemPreview() {
-    ExpenseItem(description = "test", value = BigDecimal.valueOf(2023.55))
+private fun ExpenseBodyPreview() {
+    ExpenseBody(
+        "10 - 2022",
+        {},
+        {},
+        mapOf(Category(1, "test", BigDecimal.TEN, CostType.CONSTANT) to listOf()),
+        {})
 }
+
+//@Preview(showBackground = true)
+//@Composable
+//private fun ExpanseItemPreview() {
+//    ExpenseItem(description = "test", value = BigDecimal.valueOf(2023.55))
+//}

@@ -11,5 +11,9 @@ interface ExpenseRepository {
 
     suspend fun saveCategory(category: Category)
     suspend fun saveExpense(expense: Expense)
-    fun getCategoriesAndExpenses() : Flow<Map<Category, List<Expense>>>
+
+    fun getCategories(): Flow<List<Category>>
+    fun getExpensesForDate(dateRange: Pair<LocalDate, LocalDate>): Flow<List<Expense>>
+
+//    fun getCategoriesAndExpenses() : Flow<Map<Category, List<Expense>>>
 }

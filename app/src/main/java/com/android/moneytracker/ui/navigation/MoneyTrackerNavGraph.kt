@@ -14,21 +14,28 @@ import com.android.moneytracker.ui.expenses.ExpenseScreen
 
 @Composable
 fun MoneyTrackerNavHost(
-    navController: NavHostController
+    navController: NavHostController,
 ) {
+
     NavHost(
         navController = navController, startDestination = ExpenseDestination.route
     ) {
         composable(route = ExpenseDestination.route) {
-            ExpenseScreen(navigateToAddExpanse = { navController.navigate("${ExpenseEntryDestination.route}/${it}") })
+            ExpenseScreen(
+                reloadScreen = {
+                    navController.navigate(ExpenseDestination.route)
+                },
+                navigateToAddExpanse = { navController.navigate("${ExpenseEntryDestination.route}/${it}") }
+            )
         }
-        composable(route = ExpenseEntryDestination.routeWithArgs,
+        composable(
+            route = ExpenseEntryDestination.routeWithArgs,
             arguments = listOf(navArgument(ExpenseEntryDestination.itemIdArg) {
                 type = NavType.IntType
             })
         ) {
             ExpenseEntryScreen(
-                navigateBack = { navController.popBackStack() }
+                navigateBack = { navController.navigate(ExpenseDestination.route) }
             )
         }
     }

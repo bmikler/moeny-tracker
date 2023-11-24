@@ -1,5 +1,6 @@
 package com.android.moneytracker.ui.expenses
 
+import android.annotation.SuppressLint
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -18,7 +19,8 @@ import java.time.LocalDate
 
 class ExpenseEntryViewModel(
     savedStateHandle: SavedStateHandle,
-    private val expanseRepository: ExpenseRepository
+    private val expanseRepository: ExpenseRepository,
+    private val sharedDateViewModel: SharedDateViewModel
 ) : ViewModel() {
 
     private val categoryId: Int = checkNotNull(savedStateHandle[ExpenseEntryDestination.itemIdArg])
@@ -30,10 +32,9 @@ class ExpenseEntryViewModel(
             EntryUiState(entryDetails = entryDetails, isEntryValid = validateInput(entryDetails))
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     fun saveEntry() {
         if (validateInput()) {
-            val expense = entryUiState.entryDetails.toEntity()
+            val expense = entryUiState.entryDetails.toEntity(sharedDateViewModel.date)
             Log.d("Saving expense", expense.toString())
 
             viewModelScope.launch(Dispatchers.IO) {
@@ -61,8 +62,8 @@ data class EntryDetails(
     val categoryId: Int
 )
 
-@RequiresApi(Build.VERSION_CODES.O)
-fun EntryDetails.toEntity() = Expense( description = description, value = value.toBigDecimalSafe(), timestamp = LocalDate.now(), categoryId = categoryId)
+
+fun EntryDetails.toEntity(date: LocalDate) = Expense(description = description, value = value.toBigDecimalSafe(), timestamp = date, categoryId = categoryId)
 
 fun String.toBigDecimalSafe(): BigDecimal =
     this.replace(",", ".").toBigDecimalOrNull() ?: BigDecimal.ZERO
