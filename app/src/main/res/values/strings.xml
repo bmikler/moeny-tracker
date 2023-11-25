@@ -5,7 +5,8 @@
     <string name="btn_add">Add\n</string>
     <string name="title_expense_entry">Add expense</string>
     <string name="save_action">Save</string>
-    <string name="label_already_spent">Spent This Month</string>
+    <string name="label_already_spent_month">Spent This Month</string>
+    <string name="label_already_spent_year">Spent This Year</string>
     <string name="label_left_to_spend_month">Left This Month</string>
     <string name="label_left_to_spend_year">Left This Year</string>
 </resources>

@@ -13,7 +13,7 @@ class OfflineExpenseRepository(private val expenseDao: ExpenseDao) : ExpenseRepo
     override suspend fun saveCategory(category: Category) = expenseDao.save(category)
     override suspend fun saveExpense(expense: Expense) = expenseDao.save(expense)
     override fun getCategories(): List<Category> = expenseDao.getCategories()
-    override fun getExpensesForDate(dateRange: Pair<LocalDate, LocalDate>): List<Expense> =
+    override fun getExpensesForDates(dateRange: Pair<LocalDate, LocalDate>): List<Expense> =
         expenseDao.getExpensesForDate(dateRange.first, dateRange.second)
 
     override fun getAnnualExpensesSummedByCategory(dateRange: Pair<LocalDate, LocalDate>): List<CategoryTotal> =

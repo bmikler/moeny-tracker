@@ -22,7 +22,6 @@ fun MoneyTrackerNavHost(
     ) {
         composable(route = ExpenseDestination.route) {
             ExpenseScreen(
-                reloadScreen = { navController.navigate(ExpenseDestination.route) },
                 navigateToAddExpanse = { navController.navigate("${ExpenseEntryDestination.route}/${it}") }
             )
         }

@@ -20,6 +20,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -50,12 +51,11 @@ object ExpenseDestination : NavigationDestination {
 @Composable
 fun ExpenseScreen(
     viewModel: ExpenseViewModel = viewModel(factory = AppViewModelProvider.Factory),
-    reloadScreen: () -> Unit,
     navigateToAddExpanse: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
-    val uiState = viewModel.expenseUiState
+    val uiState by viewModel.uiState.collectAsState()
 
     Scaffold(
         topBar = {
@@ -67,14 +67,8 @@ fun ExpenseScreen(
         }) { innerPadding ->
         ExpenseBody(
             date = uiState.date,
-            nextDate = {
-                viewModel.nextDate()
-                reloadScreen()
-            },
-            previousDate = {
-                viewModel.previousDate()
-                reloadScreen()
-            },
+            nextDate = { viewModel.nextDate() },
+            previousDate = { viewModel.previousDate() },
             expensesWithCategories = uiState.expensesByCategory,
             addExpense = navigateToAddExpanse,
             modifier = modifier
@@ -185,7 +179,7 @@ private fun CategoryHeader(
             modifier = Modifier.fillMaxWidth()
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(text = stringResource(R.string.label_already_spent))
+                Text(text = stringResource(R.string.label_already_spent_month))
                 Text(text = "${category.alreadySpent} PLN")
             }
 
