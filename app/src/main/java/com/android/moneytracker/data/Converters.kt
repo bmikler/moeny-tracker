@@ -21,14 +21,13 @@ class Converters {
     }
 
     @TypeConverter
-    fun bigDecimalToString(input: BigDecimal): String {
-        return input.toPlainString() ?: ""
+    fun bigDecimalToString(input: BigDecimal): Double {
+        return input.toDouble()
     }
 
     @TypeConverter
-    fun stringToBigDecimal(input: String): BigDecimal {
-        if (input.isBlank()) return BigDecimal.valueOf(0.0)
-        return input.toBigDecimalOrNull() ?: BigDecimal.valueOf(0.0)
+    fun stringToBigDecimal(input: Double): BigDecimal {
+        return BigDecimal(input)
     }
 
 }

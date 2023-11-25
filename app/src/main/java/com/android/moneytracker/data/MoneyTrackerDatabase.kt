@@ -6,10 +6,11 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
+import androidx.room.migration.Migration
 import com.android.moneytracker.model.Category
 import com.android.moneytracker.model.Expense
 
-@Database(entities = [Expense::class, Category::class], version = 1, exportSchema = false)
+@Database(entities = [Expense::class, Category::class], version = 4, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class MoneyTrackerDatabase : RoomDatabase(){
 

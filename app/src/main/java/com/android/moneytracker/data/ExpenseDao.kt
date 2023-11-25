@@ -5,23 +5,33 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.android.moneytracker.model.Category
+import com.android.moneytracker.model.CostType
 import com.android.moneytracker.model.Expense
 import kotlinx.coroutines.flow.Flow
+import java.math.BigDecimal
 import java.time.LocalDate
 
 @Dao
 interface ExpenseDao {
 
     @Query("SELECT * FROM categories")
-    fun getCategories(): Flow<List<Category>>
+    fun getCategories(): List<Category>
     @Query("SELECT * FROM expenses WHERE expenses.timestamp BETWEEN :startDate AND :endDate")
-    fun getExpensesForDate(startDate: LocalDate, endDate: LocalDate) : Flow<List<Expense>>
+    fun getExpensesForDate(startDate: LocalDate, endDate: LocalDate) : List<Expense>
+
+    @Query("SELECT categories.id, SUM(expenses.value) AS total FROM categories LEFT JOIN expenses ON categories.id = expenses.categoryId WHERE categories.type = :type AND expenses.timestamp BETWEEN :startDate AND :endDate")
+    fun getExpensesForAnnualCategoriesForYear(startDate: LocalDate, endDate: LocalDate, type: CostType = CostType.ANNUAL): List<CategoryTotal>
 
     @Query("SELECT * FROM categories LEFT JOIN expenses ON expenses.categoryId = categories.id")
-    fun getExpensesByCategory() : Flow<Map<Category, List<Expense>>>
+    fun getExpensesByCategory() : Map<Category, List<Expense>>
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun save(expense: Expense)
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun save(category: Category)
 
 }
+
+data class CategoryTotal(
+    val id: Int,
+    val total: BigDecimal
+)

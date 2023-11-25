@@ -20,7 +20,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -56,7 +55,7 @@ fun ExpenseScreen(
     modifier: Modifier = Modifier
 ) {
 
-    val uiState by viewModel.expenseUiState.collectAsState()
+    val uiState = viewModel.expenseUiState
 
     Scaffold(
         topBar = {
@@ -67,7 +66,7 @@ fun ExpenseScreen(
             )
         }) { innerPadding ->
         ExpenseBody(
-            date = "${uiState.date.monthValue} - ${uiState.date.year}",
+            date = uiState.date,
             nextDate = {
                 viewModel.nextDate()
                 reloadScreen()
@@ -185,18 +184,19 @@ private fun CategoryHeader(
             horizontalArrangement = Arrangement.SpaceAround,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Column {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(text = stringResource(R.string.label_already_spent))
                 Text(text = "${category.alreadySpent} PLN")
             }
 
-            Column {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
-                if (category.type == CostType.MONTHLY) {
-
-                    Text(text = stringResource(R.string.label_left_to_spend))
-                    Text(text = "${category.leftToSpent} PLN")
+                when(category.type) {
+                    CostType.ANNUAL -> Text(text = stringResource(R.string.label_left_to_spend_year))
+                    CostType.MONTHLY -> Text(text = stringResource(R.string.label_left_to_spend_month))
                 }
+
+                Text(text = "${category.leftToSpent} PLN")
 
             }
         }
