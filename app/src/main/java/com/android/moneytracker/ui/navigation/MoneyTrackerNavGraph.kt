@@ -22,7 +22,8 @@ fun MoneyTrackerNavHost(
     ) {
         composable(route = ExpenseDestination.route) {
             ExpenseScreen(
-                navigateToAddExpanse = { navController.navigate("${ExpenseEntryDestination.route}/${it}") }
+                navigateToAddExpanse = { navController.navigate("${ExpenseEntryDestination.route}/${it}") },
+                navigateToAddCategory = { }
             )
         }
         composable(

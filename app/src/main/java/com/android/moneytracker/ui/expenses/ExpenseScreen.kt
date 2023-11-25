@@ -52,13 +52,19 @@ object ExpenseDestination : NavigationDestination {
 fun ExpenseScreen(
     viewModel: ExpenseViewModel = viewModel(factory = AppViewModelProvider.Factory),
     navigateToAddExpanse: (Int) -> Unit,
+    navigateToAddCategory: () -> Unit,
     modifier: Modifier = Modifier
 ) {
 
     val uiState by viewModel.uiState.collectAsState()
 
     Scaffold(
-        topBar = { MoneyTrackerTopAppBar(canNavigateBack = false,) }
+        topBar = {
+            MoneyTrackerTopAppBar(
+                isActionEnable = true,
+                onActionButton = navigateToAddCategory
+            )
+        }
     ) { innerPadding ->
         ExpenseBody(
             date = uiState.date,
@@ -180,7 +186,7 @@ private fun CategoryHeader(
 
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
-                when(category.type) {
+                when (category.type) {
                     CostType.ANNUAL -> Text(text = stringResource(R.string.label_left_to_spend_year))
                     CostType.MONTHLY -> Text(text = stringResource(R.string.label_left_to_spend_month))
                 }
