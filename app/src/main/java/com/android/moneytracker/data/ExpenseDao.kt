@@ -7,7 +7,6 @@ import androidx.room.Query
 import com.android.moneytracker.model.Category
 import com.android.moneytracker.model.CostType
 import com.android.moneytracker.model.Expense
-import kotlinx.coroutines.flow.Flow
 import java.math.BigDecimal
 import java.time.LocalDate
 

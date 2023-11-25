@@ -30,7 +30,7 @@ fun MoneyTrackerApp(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MoneyTrackerTopAppBar(
-    title: String,
+    title: String = stringResource(R.string.app_name),
     canNavigateBack: Boolean,
     modifier: Modifier = Modifier,
     scrollBehavior: TopAppBarScrollBehavior? = null,

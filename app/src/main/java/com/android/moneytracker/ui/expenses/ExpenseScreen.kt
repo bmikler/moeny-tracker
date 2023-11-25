@@ -58,13 +58,8 @@ fun ExpenseScreen(
     val uiState by viewModel.uiState.collectAsState()
 
     Scaffold(
-        topBar = {
-            MoneyTrackerTopAppBar(
-                title = stringResource(id = ExpenseDestination.titleRes),
-                canNavigateBack = false,
-                navigateBack = { }
-            )
-        }) { innerPadding ->
+        topBar = { MoneyTrackerTopAppBar(canNavigateBack = false,) }
+    ) { innerPadding ->
         ExpenseBody(
             date = uiState.date,
             nextDate = { viewModel.nextDate() },

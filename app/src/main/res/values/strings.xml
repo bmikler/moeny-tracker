@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MoneyTracker</string>
+    <string name="app_name">Money Tracker</string>
     <string name="title_expense">expense\n</string>
     <string name="btn_back">back</string>
     <string name="btn_add">Add\n</string>
