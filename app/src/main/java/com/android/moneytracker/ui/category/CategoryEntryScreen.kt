@@ -94,13 +94,14 @@ fun CategoryEntryBody(
             modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
         ) {
             OutlinedTextField(
-                label = "abc",
+//                label = { Text("ExpenseType") },
                 value = "",
                 onValueChange = { },
                 enabled = true,
             )
 
             OutlinedTextField(
+//                label = { Text("ExpenseType") },
                 value = "entryDetails.value",
                 onValueChange = {
 //                onEntryValueChange(entryDetails.copy(value = it))
@@ -166,7 +167,7 @@ fun ExpenseTypeDropdown(
             .onGloballyPositioned { coordinates ->
                 textFieldSize = coordinates.size.toSize()
             },
-        label = { Text("ExpenseType") },
+//        label = { Text("ExpenseType") },
         trailingIcon = {
             Icon(icon, "contentDescription",
                 Modifier.clickable { isExpanded = !isExpanded })
