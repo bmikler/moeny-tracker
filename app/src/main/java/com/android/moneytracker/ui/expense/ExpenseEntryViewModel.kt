@@ -21,17 +21,16 @@ class ExpenseEntryViewModel(
 ) : ViewModel() {
 
     private val categoryId: Int = checkNotNull(savedStateHandle[ExpenseEntryDestination.itemIdArg])
-    var entryUiState by mutableStateOf(EntryUiState(EntryDetails(categoryId = categoryId)))
+    var expenseEntryUiState by mutableStateOf(ExpenseEntryUiState(ExpenseEntryDetails(categoryId = categoryId)))
         private set
 
-    fun updateUiState(entryDetails: EntryDetails) {
-        entryUiState =
-            EntryUiState(entryDetails = entryDetails, isEntryValid = validateInput(entryDetails))
+    fun updateUiState(expenseEntryDetails: ExpenseEntryDetails) {
+        expenseEntryUiState = ExpenseEntryUiState(expenseEntryDetails = expenseEntryDetails, isEntryValid = validateInput(expenseEntryDetails))
     }
 
     fun saveEntry() {
         if (validateInput()) {
-            val expense = entryUiState.entryDetails.toEntity(sharedDateViewModel.date)
+            val expense = expenseEntryUiState.expenseEntryDetails.toEntity(sharedDateViewModel.date)
             Log.d("Saving expense", expense.toString())
 
             viewModelScope.launch(Dispatchers.IO) {
@@ -41,26 +40,25 @@ class ExpenseEntryViewModel(
         }
     }
 
-    private fun validateInput(uiState: EntryDetails = entryUiState.entryDetails): Boolean {
+    private fun validateInput(uiState: ExpenseEntryDetails = expenseEntryUiState.expenseEntryDetails): Boolean {
         return with(uiState) {
             description.isNotBlank() && value.isNotBlank() && value.toBigDecimalSafe() > BigDecimal.ZERO
         }
     }
 }
 
-data class EntryUiState(
-    val entryDetails: EntryDetails,
+data class ExpenseEntryUiState(
+    val expenseEntryDetails: ExpenseEntryDetails,
     val isEntryValid: Boolean = false
 )
 
-data class EntryDetails(
+data class ExpenseEntryDetails(
     val description: String = "",
     val value: String = "",
     val categoryId: Int
 )
 
 
-fun EntryDetails.toEntity(date: LocalDate) = Expense(description = description, value = value.toBigDecimalSafe(), timestamp = date, categoryId = categoryId)
+fun ExpenseEntryDetails.toEntity(date: LocalDate) = Expense(description = description, value = value.toBigDecimalSafe(), timestamp = date, categoryId = categoryId)
 
-fun String.toBigDecimalSafe(): BigDecimal =
-    this.replace(",", ".").toBigDecimalOrNull() ?: BigDecimal.ZERO
+fun String.toBigDecimalSafe(): BigDecimal = this.replace(",", ".").toBigDecimalOrNull() ?: BigDecimal.ZERO

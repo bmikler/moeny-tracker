@@ -37,19 +37,22 @@ import java.util.Currency
 import androidx.compose.material3.Button
 import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.android.moneytracker.infrastructure.AppViewModelProvider
 import com.android.moneytracker.model.ExpenseType
+import com.android.moneytracker.ui.expense.ExpenseEntryDetails
+import com.android.moneytracker.ui.expense.ExpenseEntryUiState
 import java.util.Locale
 
 object CategoryEntryDestination : NavigationDestination {
     override val route: String = "category_entry"
     override val titleRes: Int = R.string.title_category_entry
-    const val itemIdArg = "itemId"
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CategoryEntryScreen(
-//    viewModel: ExpenseEntryViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    viewModel: CategoryEntryViewModel = viewModel(factory = AppViewModelProvider.Factory),
     navigateBack: () -> Unit,
     canNavigateBack: Boolean = true,
 ) {
@@ -66,9 +69,12 @@ fun CategoryEntryScreen(
     { innerPadding ->
         CategoryEntryBody(
             onSave = {
-//                viewModel.saveEntry()
+                viewModel.saveCategory()
                 navigateBack()
             },
+            categoryEntryUiState = viewModel.entryUiState,
+            onEntryValueChange = viewModel::updateUiState,
+            onTypeChange = viewModel::updateType,
             modifier = Modifier
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
@@ -79,10 +85,16 @@ fun CategoryEntryScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CategoryEntryBody(
+private fun CategoryEntryBody(
+    categoryEntryUiState: CategoryEntryUiState,
+    onEntryValueChange: (CategoryEntryDetails) -> Unit,
+    onTypeChange: (ExpenseType) -> Unit,
     onSave: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
+
+    val entryDetails = categoryEntryUiState.categoryEntryDetails
+
 
     Column(
         modifier = modifier,
@@ -95,16 +107,17 @@ fun CategoryEntryBody(
         ) {
             OutlinedTextField(
 //                label = { Text("ExpenseType") },
-                value = "",
-                onValueChange = { },
+                value = entryDetails.name,
+                onValueChange = {onEntryValueChange(entryDetails.copy(name = it))
+                },
                 enabled = true,
             )
 
             OutlinedTextField(
 //                label = { Text("ExpenseType") },
-                value = "entryDetails.value",
+                value = entryDetails.spendingLimit,
                 onValueChange = {
-//                onEntryValueChange(entryDetails.copy(value = it))
+                onEntryValueChange(entryDetails.copy(spendingLimit = it))
                 },
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Decimal),
                 trailingIcon = { Text(Currency.getInstance(Locale.getDefault()).symbol) },
@@ -112,9 +125,11 @@ fun CategoryEntryBody(
                 enabled = true,
             )
 
-
-
-            ExpenseTypeDropdown(expenseTypes = listOf("test1", "test2"))
+            ExpenseTypeDropdown(
+                selectedType = entryDetails.type,
+                expenseTypes = categoryEntryUiState.expenseTypes,
+                onTypeChange = onTypeChange
+            )
             
 
         }
@@ -123,7 +138,7 @@ fun CategoryEntryBody(
         Column {
             Button(
                 onClick = onSave,
-                enabled = true,
+                enabled = categoryEntryUiState.isValid,
 //            entryUiState.isEntryValid
                 shape = MaterialTheme.shapes.small,
             ) {
@@ -143,15 +158,12 @@ fun CategoryEntryBody(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExpenseTypeDropdown(
-    expenseTypes: List<String>,
+    selectedType: ExpenseType,
+    expenseTypes: List<ExpenseType>,
+    onTypeChange: (ExpenseType) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var isExpanded by remember { mutableStateOf(false) }
-
-
-    // Create a string value to store the selected city
-    var selectedType by remember { mutableStateOf("") }
-
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
 
     // Up Icon when expanded and down icon when collapsed
@@ -160,8 +172,8 @@ fun ExpenseTypeDropdown(
 
 
     OutlinedTextField(
-        value = selectedType,
-        onValueChange = { selectedType = it },
+        value = selectedType.name,
+        onValueChange = { onTypeChange(ExpenseType.valueOf(it)) },
         readOnly = true,
         modifier = Modifier
             .onGloballyPositioned { coordinates ->
@@ -180,11 +192,11 @@ fun ExpenseTypeDropdown(
         modifier = Modifier
             .width(with(LocalDensity.current) { textFieldSize.width.toDp() })
     ) {
-        expenseTypes.forEach { label ->
+        expenseTypes.forEach { type ->
             DropdownMenuItem(
-                text = { Text(text = label) },
+                text = { Text(text = type.name) },
                 onClick = {
-                    selectedType = label
+                    onTypeChange(type)
                     isExpanded = false
                 })
         }
@@ -192,8 +204,3 @@ fun ExpenseTypeDropdown(
 
 }
 
-@Preview(showBackground = true)
-@Composable
-fun Preview() {
-    CategoryEntryScreen({})
-}

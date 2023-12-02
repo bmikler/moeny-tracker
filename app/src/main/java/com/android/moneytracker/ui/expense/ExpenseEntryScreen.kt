@@ -56,7 +56,7 @@ fun ExpenseEntryScreen(
 
     { innerPadding ->
         ExpenseEntryBody(
-            viewModel.entryUiState,
+            viewModel.expenseEntryUiState,
             viewModel::updateUiState,
             onSave = {
                 viewModel.saveEntry()
@@ -74,8 +74,8 @@ fun ExpenseEntryScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ExpenseEntryBody(
-    entryUiState: EntryUiState,
-    onEntryValueChange: (EntryDetails) -> Unit,
+    expenseEntryUiState: ExpenseEntryUiState,
+    onEntryValueChange: (ExpenseEntryDetails) -> Unit,
     onSave: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -85,7 +85,7 @@ private fun ExpenseEntryBody(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        val entryDetails = entryUiState.entryDetails
+        val entryDetails = expenseEntryUiState.expenseEntryDetails
 
         Text(text = entryDetails.categoryId.toString())
 
@@ -109,7 +109,7 @@ private fun ExpenseEntryBody(
 
         Button(
             onClick = onSave,
-            enabled = entryUiState.isEntryValid,
+            enabled = expenseEntryUiState.isEntryValid,
             shape = MaterialTheme.shapes.small,
         ) {
             Text(text = stringResource(R.string.save_action))
