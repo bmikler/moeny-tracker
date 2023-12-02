@@ -1,4 +1,4 @@
-package com.android.moneytracker.ui.expenses
+package com.android.moneytracker.ui.expense
 
 import androidx.lifecycle.ViewModel
 import java.time.LocalDate

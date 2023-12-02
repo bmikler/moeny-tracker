@@ -6,10 +6,12 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.android.moneytracker.ui.expenses.ExpenseDestination
-import com.android.moneytracker.ui.expenses.ExpenseEntryDestination
-import com.android.moneytracker.ui.expenses.ExpenseEntryScreen
-import com.android.moneytracker.ui.expenses.ExpenseScreen
+import com.android.moneytracker.ui.category.CategoryEntryDestination
+import com.android.moneytracker.ui.category.CategoryEntryScreen
+import com.android.moneytracker.ui.expense.ExpenseDestination
+import com.android.moneytracker.ui.expense.ExpenseEntryDestination
+import com.android.moneytracker.ui.expense.ExpenseEntryScreen
+import com.android.moneytracker.ui.expense.ExpenseScreen
 
 
 @Composable
@@ -18,7 +20,8 @@ fun MoneyTrackerNavHost(
 ) {
 
     NavHost(
-        navController = navController, startDestination = ExpenseDestination.route
+//        navController = navController, startDestination = ExpenseDestination.route
+        navController = navController, startDestination = CategoryEntryDestination.route
     ) {
         composable(route = ExpenseDestination.route) {
             ExpenseScreen(
@@ -35,6 +38,11 @@ fun MoneyTrackerNavHost(
             ExpenseEntryScreen(
                 navigateBack = { navController.navigate(ExpenseDestination.route) }
             )
+        }
+        composable(
+            route = CategoryEntryDestination.route
+        ) {
+            CategoryEntryScreen(navigateBack = { navController.navigate(ExpenseDestination.route)})
         }
     }
 }

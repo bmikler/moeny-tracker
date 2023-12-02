@@ -1,4 +1,4 @@
-package com.android.moneytracker.ui.expenses
+package com.android.moneytracker.ui.expense
 
 
 import androidx.compose.foundation.layout.Arrangement
@@ -85,7 +85,6 @@ private fun ExpenseEntryBody(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-
         val entryDetails = entryUiState.entryDetails
 
         Text(text = entryDetails.categoryId.toString())
@@ -102,7 +101,7 @@ private fun ExpenseEntryBody(
                 onEntryValueChange(entryDetails.copy(value = it))
             },
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Decimal),
-            leadingIcon = { Text(Currency.getInstance(Locale.getDefault()).symbol) },
+            trailingIcon = { Text(Currency.getInstance(Locale.getDefault()).symbol) },
             singleLine = true,
             enabled = true,
         )

@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.math.BigDecimal
 
-enum class CostType {
+enum class ExpenseType {
     MONTHLY, ANNUAL
 }
 
@@ -14,5 +14,5 @@ data class Category(
     val id: Int,
     val name: String,
     val spendingLimit: BigDecimal = BigDecimal.ZERO,
-    val type: CostType
+    val type: ExpenseType
 )

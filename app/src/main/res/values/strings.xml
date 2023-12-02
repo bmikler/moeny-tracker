@@ -10,4 +10,5 @@
     <string name="label_already_spent_year">Spent This Year</string>
     <string name="label_left_to_spend_month">Left This Month</string>
     <string name="label_left_to_spend_year">Left This Year</string>
+    <string name="title_category_entry">Add category\n</string>
 </resources>

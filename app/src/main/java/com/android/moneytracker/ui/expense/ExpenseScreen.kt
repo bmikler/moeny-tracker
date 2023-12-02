@@ -1,4 +1,4 @@
-package com.android.moneytracker.ui.expenses
+package com.android.moneytracker.ui.expense
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.android.moneytracker.R
 import com.android.moneytracker.infrastructure.AppViewModelProvider
-import com.android.moneytracker.model.CostType
+import com.android.moneytracker.model.ExpenseType
 import com.android.moneytracker.model.Expense
 import com.android.moneytracker.ui.MoneyTrackerTopAppBar
 import com.android.moneytracker.ui.navigation.NavigationDestination
@@ -187,8 +187,8 @@ private fun CategoryHeader(
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
                 when (category.type) {
-                    CostType.ANNUAL -> Text(text = stringResource(R.string.label_left_to_spend_year))
-                    CostType.MONTHLY -> Text(text = stringResource(R.string.label_left_to_spend_month))
+                    ExpenseType.ANNUAL -> Text(text = stringResource(R.string.label_left_to_spend_year))
+                    ExpenseType.MONTHLY -> Text(text = stringResource(R.string.label_left_to_spend_month))
                 }
 
                 Text(text = "${category.leftToSpent} PLN")

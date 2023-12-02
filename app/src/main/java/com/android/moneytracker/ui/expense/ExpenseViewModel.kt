@@ -1,11 +1,11 @@
-package com.android.moneytracker.ui.expenses
+package com.android.moneytracker.ui.expense
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.moneytracker.data.CategoryTotal
 import com.android.moneytracker.data.repository.ExpenseRepository
 import com.android.moneytracker.model.Category
-import com.android.moneytracker.model.CostType
+import com.android.moneytracker.model.ExpenseType
 import com.android.moneytracker.model.Expense
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -63,8 +63,8 @@ class ExpenseViewModel(
                 val spentInCurrentMonth = expenses.sumOf { it.value }
 
                 val leftToSpent = when (category.type) {
-                    CostType.MONTHLY -> category.spendingLimit.minus(spentInCurrentMonth)
-                    CostType.ANNUAL -> category.spendingLimit.minus((annualExpensesSummed.firstOrNull { it.id == category.id }?.total) ?: BigDecimal.ZERO)
+                    ExpenseType.MONTHLY -> category.spendingLimit.minus(spentInCurrentMonth)
+                    ExpenseType.ANNUAL -> category.spendingLimit.minus((annualExpensesSummed.firstOrNull { it.id == category.id }?.total) ?: BigDecimal.ZERO)
                 }
 
                 CategoryUi(
@@ -98,6 +98,6 @@ data class CategoryUi(
     val name: String,
     val alreadySpent: BigDecimal,
     val leftToSpent: BigDecimal,
-    val type: CostType
+    val type: ExpenseType
 )
 
