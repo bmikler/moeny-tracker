@@ -46,7 +46,7 @@ fun MoneyTrackerTopAppBar(
         scrollBehavior = scrollBehavior,
         actions = {
             if (isActionEnable) {
-                IconButton(onClick = navigateBack) {
+                IconButton(onClick = onActionButton) {
                     Icon(
                         imageVector = Icons.Filled.Settings,
                         contentDescription = stringResource(R.string.btn_settings)

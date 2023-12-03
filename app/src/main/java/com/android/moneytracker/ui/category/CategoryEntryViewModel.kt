@@ -20,17 +20,13 @@ class CategoryEntryViewModel(private var expenseRepository: ExpenseRepository) :
         private set
 
 
-    fun updateUiState(categoryEntryDetails: CategoryEntryDetails) {
-        Log.d("test123", "updateUiState: $categoryEntryDetails")
-        entryUiState = CategoryEntryUiState(categoryEntryDetails = categoryEntryDetails, isValid = validateInput(categoryEntryDetails))
+    fun toggleDropdown() {
+        val isExpanded = entryUiState.isTypeMenuExpanded
+        entryUiState = entryUiState.copy(isTypeMenuExpanded = !isExpanded)
     }
 
-    fun updateType(type: ExpenseType) {
-        val categoryEntryDetails = with(entryUiState.categoryEntryDetails) {
-            CategoryEntryDetails(name, spendingLimit, type)
-        }
-
-        entryUiState = CategoryEntryUiState(categoryEntryDetails = categoryEntryDetails, isValid = validateInput(categoryEntryDetails))
+    fun updateUiState(categoryEntryDetails: CategoryEntryDetails) {
+        entryUiState = CategoryEntryUiState(categoryEntryDetails = categoryEntryDetails, isInputValid = validateInput(categoryEntryDetails))
     }
 
     fun saveCategory() {
@@ -39,7 +35,6 @@ class CategoryEntryViewModel(private var expenseRepository: ExpenseRepository) :
             val category = with(entryUiState.categoryEntryDetails) {
                 Category(name = name, spendingLimit = spendingLimit.toBigDecimalSafe(), type = type)
             }
-
 
             viewModelScope.launch(Dispatchers.IO) {
                 Log.d("Saving category: ", category.toString())
@@ -58,13 +53,14 @@ class CategoryEntryViewModel(private var expenseRepository: ExpenseRepository) :
 }
 
 data class CategoryEntryUiState (
-    val isValid: Boolean = false,
+    val isInputValid: Boolean = false,
+    val isTypeMenuExpanded: Boolean = false,
     val expenseTypes: List<ExpenseType> = ExpenseType.values().toList(),
     val categoryEntryDetails: CategoryEntryDetails = CategoryEntryDetails()
 )
 
 data class CategoryEntryDetails(
-    val name: String = "",
+    val name: String = " ",
     val spendingLimit: String = "0",
     val type: ExpenseType = ExpenseType.MONTHLY
 )

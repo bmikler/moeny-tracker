@@ -2,7 +2,6 @@ package com.android.moneytracker.ui.category
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-//import androidx.compose.foundation.layout.RowScopeInstance.weight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -27,7 +26,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.toSize
 import com.android.moneytracker.R
 import com.android.moneytracker.ui.MoneyTrackerTopAppBar
@@ -35,13 +33,10 @@ import com.android.moneytracker.ui.navigation.NavigationDestination
 import java.util.Currency
 
 import androidx.compose.material3.Button
-import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.android.moneytracker.infrastructure.AppViewModelProvider
 import com.android.moneytracker.model.ExpenseType
-import com.android.moneytracker.ui.expense.ExpenseEntryDetails
-import com.android.moneytracker.ui.expense.ExpenseEntryUiState
 import java.util.Locale
 
 object CategoryEntryDestination : NavigationDestination {
@@ -74,7 +69,7 @@ fun CategoryEntryScreen(
             },
             categoryEntryUiState = viewModel.entryUiState,
             onEntryValueChange = viewModel::updateUiState,
-            onTypeChange = viewModel::updateType,
+            toggleDropdown = viewModel::toggleDropdown,
             modifier = Modifier
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
@@ -88,7 +83,7 @@ fun CategoryEntryScreen(
 private fun CategoryEntryBody(
     categoryEntryUiState: CategoryEntryUiState,
     onEntryValueChange: (CategoryEntryDetails) -> Unit,
-    onTypeChange: (ExpenseType) -> Unit,
+    toggleDropdown: () -> Unit,
     onSave: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
@@ -106,31 +101,37 @@ private fun CategoryEntryBody(
             modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
         ) {
             OutlinedTextField(
-//                label = { Text("ExpenseType") },
+                label = { Text(stringResource(id = R.string.label_category_name)) },
                 value = entryDetails.name,
-                onValueChange = {onEntryValueChange(entryDetails.copy(name = it))
+                onValueChange = {
+                    onEntryValueChange(entryDetails.copy(name = it))
                 },
                 enabled = true,
+                modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.padding_small))
             )
 
             OutlinedTextField(
-//                label = { Text("ExpenseType") },
+                label = { Text(stringResource(id = R.string.label_spending_limit)) },
                 value = entryDetails.spendingLimit,
                 onValueChange = {
-                onEntryValueChange(entryDetails.copy(spendingLimit = it))
+                    onEntryValueChange(entryDetails.copy(spendingLimit = it))
                 },
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Decimal),
                 trailingIcon = { Text(Currency.getInstance(Locale.getDefault()).symbol) },
                 singleLine = true,
                 enabled = true,
+                modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.padding_small))
             )
 
             ExpenseTypeDropdown(
-                selectedType = entryDetails.type,
+                entryDetails = entryDetails,
                 expenseTypes = categoryEntryUiState.expenseTypes,
-                onTypeChange = onTypeChange
+                isExpanded = categoryEntryUiState.isTypeMenuExpanded,
+                onEntryValueChange = onEntryValueChange,
+                toggleDropdown = toggleDropdown,
+                modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.padding_small))
             )
-            
+
 
         }
 
@@ -138,8 +139,7 @@ private fun CategoryEntryBody(
         Column {
             Button(
                 onClick = onSave,
-                enabled = categoryEntryUiState.isValid,
-//            entryUiState.isEntryValid
+                enabled = categoryEntryUiState.isInputValid,
                 shape = MaterialTheme.shapes.small,
             ) {
                 Text(text = stringResource(R.string.save_action))
@@ -150,45 +150,42 @@ private fun CategoryEntryBody(
     }
 
 
-
-
 }
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExpenseTypeDropdown(
-    selectedType: ExpenseType,
+    entryDetails: CategoryEntryDetails,
     expenseTypes: List<ExpenseType>,
-    onTypeChange: (ExpenseType) -> Unit,
+    onEntryValueChange: (CategoryEntryDetails) -> Unit,
+    toggleDropdown: () -> Unit,
+    isExpanded: Boolean,
     modifier: Modifier = Modifier
 ) {
-    var isExpanded by remember { mutableStateOf(false) }
-    var textFieldSize by remember { mutableStateOf(Size.Zero) }
 
-    // Up Icon when expanded and down icon when collapsed
+    var textFieldSize by remember { mutableStateOf(Size.Zero) }
     val icon = if (isExpanded) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown
 
 
-
     OutlinedTextField(
-        value = selectedType.name,
-        onValueChange = { onTypeChange(ExpenseType.valueOf(it)) },
+        value = entryDetails.type.name,
+        onValueChange = { },
         readOnly = true,
-        modifier = Modifier
+        modifier = modifier
             .onGloballyPositioned { coordinates ->
                 textFieldSize = coordinates.size.toSize()
             },
-//        label = { Text("ExpenseType") },
+        label = { Text(stringResource(id = R.string.label_expense_type)) },
         trailingIcon = {
-            Icon(icon, "contentDescription",
-                Modifier.clickable { isExpanded = !isExpanded })
+            Icon(icon, stringResource(id = R.string.content_description_toggle_dropdown),
+                Modifier.clickable { toggleDropdown() })
         }
     )
 
     DropdownMenu(
         expanded = isExpanded,
-        onDismissRequest = { isExpanded = false },
+        onDismissRequest = { toggleDropdown() },
         modifier = Modifier
             .width(with(LocalDensity.current) { textFieldSize.width.toDp() })
     ) {
@@ -196,8 +193,8 @@ fun ExpenseTypeDropdown(
             DropdownMenuItem(
                 text = { Text(text = type.name) },
                 onClick = {
-                    onTypeChange(type)
-                    isExpanded = false
+                    toggleDropdown()
+                    onEntryValueChange(entryDetails.copy(type = type))
                 })
         }
     }

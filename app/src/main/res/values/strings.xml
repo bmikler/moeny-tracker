@@ -11,4 +11,8 @@
     <string name="label_left_to_spend_month">Left This Month</string>
     <string name="label_left_to_spend_year">Left This Year</string>
     <string name="title_category_entry">Add category\n</string>
+    <string name="label_category_name">Category name</string>
+    <string name="label_spending_limit">Spending Limit</string>
+    <string name="label_expense_type">Expense Type</string>
+    <string name="content_description_toggle_dropdown">Toggle Dropdown</string>
 </resources>
