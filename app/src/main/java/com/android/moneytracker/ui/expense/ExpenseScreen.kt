@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.android.moneytracker.R
 import com.android.moneytracker.infrastructure.AppViewModelProvider
+import com.android.moneytracker.model.Category
 import com.android.moneytracker.model.ExpenseType
 import com.android.moneytracker.model.Expense
 import com.android.moneytracker.ui.MoneyTrackerTopAppBar
@@ -51,7 +52,7 @@ object ExpenseDestination : NavigationDestination {
 @Composable
 fun ExpenseScreen(
     viewModel: ExpenseViewModel = viewModel(factory = AppViewModelProvider.Factory),
-    navigateToAddExpanse: (Int) -> Unit,
+    navigateToAddExpanse: (Category) -> Unit,
     navigateToAddCategory: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -86,7 +87,7 @@ fun ExpenseBody(
     nextDate: () -> Unit,
     previousDate: () -> Unit,
     expensesWithCategories: Map<CategoryUi, List<Expense>>,
-    addExpense: (Int) -> Unit,
+    addExpense: (Category) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -99,7 +100,7 @@ fun ExpenseBody(
 
         expensesWithCategories.forEach {
             ExpandableCategory(
-                category = it.key,
+                categoryUi = it.key,
                 expenses = it.value,
                 addExpense = addExpense
             )
@@ -110,9 +111,9 @@ fun ExpenseBody(
 
 @Composable
 fun ExpandableCategory(
-    category: CategoryUi,
+    categoryUi: CategoryUi,
     expenses: List<Expense>,
-    addExpense: (Int) -> Unit,
+    addExpense: (Category) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var expandedState by remember { mutableStateOf(false) }
@@ -133,9 +134,9 @@ fun ExpandableCategory(
                 .fillMaxWidth()
                 .padding(6.dp)
         ) {
-            CategoryHeader(category)
+            CategoryHeader(categoryUi)
             IconButton(
-                onClick = { addExpense(category.id) },
+                onClick = { addExpense(categoryUi.toCategory()) },
                 modifier = Modifier.background(Color.LightGray)
             ) {
                 Icon(

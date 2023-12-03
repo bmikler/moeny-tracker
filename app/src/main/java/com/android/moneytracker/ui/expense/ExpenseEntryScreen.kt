@@ -26,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.android.moneytracker.infrastructure.AppViewModelProvider
+import com.android.moneytracker.model.Category
 import java.util.Currency
 import java.util.Locale
 
@@ -33,18 +34,16 @@ import java.util.Locale
 object ExpenseEntryDestination : NavigationDestination {
     override val route: String = "expenses_entry"
     override val titleRes: Int = R.string.title_expense_entry
-    const val itemIdArg = "itemId"
-    val routeWithArgs = "$route/{$itemIdArg}"
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExpenseEntryScreen(
     viewModel: ExpenseEntryViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    category: Category,
     navigateBack: () -> Unit,
     canNavigateBack: Boolean = true,
 ) {
-
     Scaffold(
         topBar = {
             MoneyTrackerTopAppBar(
@@ -56,6 +55,7 @@ fun ExpenseEntryScreen(
 
     { innerPadding ->
         ExpenseEntryBody(
+            category,
             viewModel.expenseEntryUiState,
             viewModel::updateUiState,
             onSave = {
@@ -74,6 +74,7 @@ fun ExpenseEntryScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ExpenseEntryBody(
+    category: Category,
     expenseEntryUiState: ExpenseEntryUiState,
     onEntryValueChange: (ExpenseEntryDetails) -> Unit,
     onSave: () -> Unit,
@@ -87,18 +88,18 @@ private fun ExpenseEntryBody(
 
         val entryDetails = expenseEntryUiState.expenseEntryDetails
 
-        Text(text = entryDetails.categoryId.toString())
+        Text(text = category.name)
 
         OutlinedTextField(
             value = entryDetails.description,
-            onValueChange = { onEntryValueChange(entryDetails.copy(description = it)) },
+            onValueChange = { onEntryValueChange(entryDetails.copy(description = it, categoryId = category.id)) },
             enabled = true,
         )
 
         OutlinedTextField(
             value = entryDetails.value,
             onValueChange = {
-                onEntryValueChange(entryDetails.copy(value = it))
+                onEntryValueChange(entryDetails.copy(value = it, categoryId = category.id))
             },
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Decimal),
             trailingIcon = { Text(Currency.getInstance(Locale.getDefault()).symbol) },

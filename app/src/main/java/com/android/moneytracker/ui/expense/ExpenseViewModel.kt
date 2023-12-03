@@ -86,3 +86,8 @@ data class CategoryUi(
     val type: ExpenseType
 )
 
+
+fun CategoryUi.toCategory() = Category(id, name, alreadySpent + leftToSpent, type)
+
+
+

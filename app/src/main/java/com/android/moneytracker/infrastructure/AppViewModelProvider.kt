@@ -18,7 +18,6 @@ object AppViewModelProvider {
     var Factory = viewModelFactory {
         initializer {
             ExpenseEntryViewModel(
-                this.createSavedStateHandle(),
                 moneyTrackerApplication().container.expenseRepository,
                 sharedDateViewModel
             )

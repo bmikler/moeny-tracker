@@ -15,13 +15,11 @@ import java.math.BigDecimal
 import java.time.LocalDate
 
 class ExpenseEntryViewModel(
-    savedStateHandle: SavedStateHandle,
     private val expanseRepository: ExpenseRepository,
     private val sharedDateViewModel: SharedDateViewModel
 ) : ViewModel() {
 
-    private val categoryId: Int = checkNotNull(savedStateHandle[ExpenseEntryDestination.itemIdArg])
-    var expenseEntryUiState by mutableStateOf(ExpenseEntryUiState(ExpenseEntryDetails(categoryId = categoryId)))
+    var expenseEntryUiState by mutableStateOf(ExpenseEntryUiState(ExpenseEntryDetails()))
         private set
 
     fun updateUiState(expenseEntryDetails: ExpenseEntryDetails) {
@@ -55,7 +53,7 @@ data class ExpenseEntryUiState(
 data class ExpenseEntryDetails(
     val description: String = "",
     val value: String = "",
-    val categoryId: Int
+    val categoryId: Int = -1
 )
 
 
