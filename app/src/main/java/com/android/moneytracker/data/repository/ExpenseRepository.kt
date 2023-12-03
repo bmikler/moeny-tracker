@@ -8,11 +8,10 @@ import java.time.LocalDate
 
 
 interface ExpenseRepository {
-    fun getCategories(): List<Category>
     suspend fun saveCategory(category: Category)
     suspend fun removeCategory(category: Category)
     suspend fun saveExpense(expense: Expense)
     suspend fun removeExpense(expense: Expense)
-    fun getExpensesForDates(dateRange: Pair<LocalDate, LocalDate>): List<Expense>
     fun getAnnualExpensesSummedByCategory(dateRange: Pair<LocalDate, LocalDate>): List<CategoryTotal>
+    fun getCategoriesWithExpenses(dateRange: Pair<LocalDate, LocalDate>) : Map<Category, List<Expense>>
 }

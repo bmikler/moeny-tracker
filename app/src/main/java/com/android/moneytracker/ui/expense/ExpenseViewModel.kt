@@ -15,16 +15,13 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.time.LocalDate
-
-
 class ExpenseViewModel(
     private val expenseRepository: ExpenseRepository,
     private val sharedDateViewModel: SharedDateViewModel
 ) : ViewModel() {
 
 
-    private val _uiState =
-        MutableStateFlow(ExpenseUiState(sharedDateViewModel.date.toString(), mapOf()))
+    private val _uiState = MutableStateFlow(ExpenseUiState(sharedDateViewModel.date.toString(), mapOf()))
     val uiState: StateFlow<ExpenseUiState> = _uiState.asStateFlow()
 
     init {
@@ -43,14 +40,11 @@ class ExpenseViewModel(
 
     private fun reloadUiState() {
         viewModelScope.launch(Dispatchers.IO) {
-            val categories = expenseRepository.getCategories()
-            val expenses = expenseRepository.getExpensesForDates(sharedDateViewModel.date.getMonthRange())
             val expensesByCategoryAnnual = expenseRepository.getAnnualExpensesSummedByCategory(sharedDateViewModel.date.getYearRange())
+            val categoriesWithExpenses = expenseRepository.getCategoriesWithExpenses(sharedDateViewModel.date.getMonthRange())
 
-            val expensesByCategory: Map<Category, List<Expense>> = associateCategoriesWithExpenses(categories, expenses)
-
-            val mapKeys: Map<CategoryUi, List<Expense>> =
-                expensesByCategory.mapKeys { (category, expenses) ->
+            val categoriesUiWithExpenses: Map<CategoryUi, List<Expense>> =
+                categoriesWithExpenses.mapKeys { (category, expenses) ->
 
                     val alreadySpent = when (category.type) {
                         ExpenseType.MONTHLY -> expenses.sumOf { it.value }
@@ -66,20 +60,17 @@ class ExpenseViewModel(
                     )
                 }
 
-
             _uiState.update {
-                ExpenseUiState(sharedDateViewModel.date.getString(), mapKeys)
+                ExpenseUiState(sharedDateViewModel.date.getString(), categoriesUiWithExpenses)
             }
         }
     }
-
-    private fun associateCategoriesWithExpenses(categories: List<Category>, expenses: List<Expense>) =
-        categories.associateWith { category -> expenses.filter { expense -> expense.categoryId == category.id } }
     private fun List<CategoryTotal>.getTotalForCategory(id: Int) = (firstOrNull { it.id == id }?.total) ?: BigDecimal.ZERO
     private fun LocalDate.getString() = "$month - $year"
     private fun LocalDate.getMonthRange() = LocalDate.of(year, month, 1) to LocalDate.of(year, month, lengthOfMonth())
     private fun LocalDate.getYearRange() = LocalDate.of(year, 1, 1) to LocalDate.of(year, 12, lengthOfMonth())
 }
+
 
 
 data class ExpenseUiState(
