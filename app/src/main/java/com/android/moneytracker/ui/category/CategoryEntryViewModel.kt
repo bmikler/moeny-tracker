@@ -19,7 +19,6 @@ class CategoryEntryViewModel(private var expenseRepository: ExpenseRepository) :
     var entryUiState by mutableStateOf(CategoryEntryUiState())
         private set
 
-
     fun toggleDropdown() {
         val isExpanded = entryUiState.isTypeMenuExpanded
         entryUiState = entryUiState.copy(isTypeMenuExpanded = !isExpanded)
@@ -33,7 +32,7 @@ class CategoryEntryViewModel(private var expenseRepository: ExpenseRepository) :
         if (validateInput()) {
 
             val category = with(entryUiState.categoryEntryDetails) {
-                Category(name = name, spendingLimit = spendingLimit.toBigDecimalSafe(), type = type)
+                Category(id = id, name = name, spendingLimit = spendingLimit.toBigDecimalSafe(), type = type)
             }
 
             viewModelScope.launch(Dispatchers.IO) {
@@ -43,6 +42,7 @@ class CategoryEntryViewModel(private var expenseRepository: ExpenseRepository) :
 
         }
     }
+
 
     private fun validateInput(uiState: CategoryEntryDetails = entryUiState.categoryEntryDetails): Boolean {
         return with(uiState) {

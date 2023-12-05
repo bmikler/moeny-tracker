@@ -70,7 +70,7 @@ fun ExpenseScreen(
             date = uiState.date,
             nextDate = { viewModel.nextDate() },
             previousDate = { viewModel.previousDate() },
-            expensesWithCategories = uiState.expensesByCategory,
+            categoriesWithExpenses = uiState.expensesByCategory,
             addExpense = navigateToAddExpanse,
             modifier = modifier
                 .padding(innerPadding)
@@ -85,7 +85,7 @@ fun ExpenseBody(
     date: String,
     nextDate: () -> Unit,
     previousDate: () -> Unit,
-    expensesWithCategories: Map<CategoryUi, List<Expense>>,
+    categoriesWithExpenses: Map<CategoryUi, List<Expense>>,
     addExpense: (Category) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -97,12 +97,14 @@ fun ExpenseBody(
 
         ExpenseNavigation(nextDate, previousDate, date)
 
-        expensesWithCategories.forEach {
-            ExpandableCategory(
-                categoryUi = it.key,
-                expenses = it.value,
-                addExpense = addExpense
-            )
+        LazyColumn {
+            items(categoriesWithExpenses.entries.toList(), key = { it.key.id }) { entry ->
+                ExpandableCategory(
+                    categoryUi = entry.key,
+                    expenses = entry.value,
+                    addExpense = addExpense
+                )
+            }
         }
     }
 }

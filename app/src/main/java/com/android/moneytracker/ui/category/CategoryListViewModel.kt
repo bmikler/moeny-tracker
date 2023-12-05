@@ -19,13 +19,6 @@ class CategoryListViewModel(private val expenseRepository: ExpenseRepository) : 
             initialValue = CategoryListUiState()
         )
 
-//    fun removeEntity(entity: UiEntity) {
-//        viewModelScope.launch(Dispatchers.IO){
-//            Log.d("Removing entity", "$entity")
-//            groupRepository.deleteGroup(entity as Group)
-//        }
-//    }
-
     companion object {
         private const val TIMEOUT_MILLIS = 5_000L
     }

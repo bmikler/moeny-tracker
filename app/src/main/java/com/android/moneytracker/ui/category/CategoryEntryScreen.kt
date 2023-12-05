@@ -162,15 +162,15 @@ private fun CategoryEntryBody(
             ) {
                 Text(text = stringResource(R.string.btn_save))
             }
-
-            if (isDeleteEnabled) {
-                Button(
-                    onClick = {},
-                    shape = MaterialTheme.shapes.small,
-                ) {
-                    Text(text = stringResource(R.string.btn_remove))
-                }
-            }
+//
+//            if (isDeleteEnabled) {
+//                Button(
+//                    onClick = {},
+//                    shape = MaterialTheme.shapes.small,
+//                ) {
+//                    Text(text = stringResource(R.string.btn_remove))
+//                }
+//            }
 
 
         }
