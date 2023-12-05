@@ -45,7 +45,6 @@ import java.math.BigDecimal
 
 object ExpenseDestination : NavigationDestination {
     override val route: String = "expenses"
-    override val titleRes: Int = R.string.title_expense
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

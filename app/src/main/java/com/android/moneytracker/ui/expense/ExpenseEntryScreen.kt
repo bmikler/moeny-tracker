@@ -33,7 +33,6 @@ import java.util.Locale
 
 object ExpenseEntryDestination : NavigationDestination {
     override val route: String = "expenses_entry"
-    override val titleRes: Int = R.string.title_expense_entry
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -113,7 +112,7 @@ private fun ExpenseEntryBody(
             enabled = expenseEntryUiState.isEntryValid,
             shape = MaterialTheme.shapes.small,
         ) {
-            Text(text = stringResource(R.string.save_action))
+            Text(text = stringResource(R.string.btn_save))
         }
     }
 }

@@ -60,7 +60,10 @@ data class CategoryEntryUiState (
 )
 
 data class CategoryEntryDetails(
+    val id: Int = 0,
     val name: String = " ",
     val spendingLimit: String = "0",
     val type: ExpenseType = ExpenseType.MONTHLY
 )
+
+fun Category.toDetails() = CategoryEntryDetails(this.id, this.name, this.spendingLimit.toString(), this.type)

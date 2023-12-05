@@ -1,5 +1,6 @@
 package com.android.moneytracker.ui.category
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -36,12 +37,12 @@ import androidx.compose.material3.Button
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.android.moneytracker.infrastructure.AppViewModelProvider
+import com.android.moneytracker.model.Category
 import com.android.moneytracker.model.ExpenseType
 import java.util.Locale
 
 object CategoryEntryDestination : NavigationDestination {
     override val route: String = "category_entry"
-    override val titleRes: Int = R.string.title_category_entry
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -50,7 +51,17 @@ fun CategoryEntryScreen(
     viewModel: CategoryEntryViewModel = viewModel(factory = AppViewModelProvider.Factory),
     navigateBack: () -> Unit,
     canNavigateBack: Boolean = true,
+    category: Category? = null,
 ) {
+
+    Log.d("TEST1", "category: $category ${category != null}")
+
+    category?.let {
+        Log.d("TEST2", "category: $it ${it != null}")
+        viewModel.updateUiState(it.toDetails())
+    }
+
+
 
     Scaffold(
         topBar = {
@@ -67,6 +78,8 @@ fun CategoryEntryScreen(
                 viewModel.saveCategory()
                 navigateBack()
             },
+            isDeleteEnabled = category != null,
+            onDelete = {},
             categoryEntryUiState = viewModel.entryUiState,
             onEntryValueChange = viewModel::updateUiState,
             toggleDropdown = viewModel::toggleDropdown,
@@ -85,6 +98,8 @@ private fun CategoryEntryBody(
     onEntryValueChange: (CategoryEntryDetails) -> Unit,
     toggleDropdown: () -> Unit,
     onSave: () -> Unit = {},
+    isDeleteEnabled: Boolean,
+    onDelete: (Category) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -121,7 +136,7 @@ private fun CategoryEntryBody(
                 singleLine = true,
                 enabled = true,
                 modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.padding_small))
-            )
+            ) 
 
             ExpenseTypeDropdown(
                 entryDetails = entryDetails,
@@ -136,14 +151,28 @@ private fun CategoryEntryBody(
         }
 
         Spacer(modifier = Modifier.height(128.dp))
-        Column {
+        Row(
+            horizontalArrangement = Arrangement.SpaceAround,
+            modifier = Modifier.fillMaxWidth()
+        ) {
             Button(
                 onClick = onSave,
                 enabled = categoryEntryUiState.isInputValid,
                 shape = MaterialTheme.shapes.small,
             ) {
-                Text(text = stringResource(R.string.save_action))
+                Text(text = stringResource(R.string.btn_save))
             }
+
+            if (isDeleteEnabled) {
+                Button(
+                    onClick = {},
+                    shape = MaterialTheme.shapes.small,
+                ) {
+                    Text(text = stringResource(R.string.btn_remove))
+                }
+            }
+
+
         }
 
 

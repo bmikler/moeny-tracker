@@ -7,6 +7,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.android.moneytracker.MoneyTrackerApplication
 import com.android.moneytracker.ui.category.CategoryEntryViewModel
+import com.android.moneytracker.ui.category.CategoryListViewModel
 import com.android.moneytracker.ui.expense.ExpenseEntryViewModel
 import com.android.moneytracker.ui.expense.ExpenseViewModel
 import com.android.moneytracker.ui.expense.SharedDateViewModel
@@ -26,6 +27,11 @@ object AppViewModelProvider {
             ExpenseViewModel(
                 moneyTrackerApplication().container.expenseRepository,
                 sharedDateViewModel
+            )
+        }
+        initializer {
+            CategoryListViewModel(
+                moneyTrackerApplication().container.expenseRepository
             )
         }
         initializer {

@@ -1,18 +1,22 @@
 <resources>
     <string name="app_name">Money Tracker</string>
-    <string name="title_expense">expense\n</string>
+
     <string name="btn_back">back</string>
     <string name="btn_settings">settings</string>
-    <string name="btn_add">Add\n</string>
-    <string name="title_expense_entry">Add expense</string>
-    <string name="save_action">Save</string>
+    <string name="btn_add">Add</string>
+    <string name="btn_save">Save</string>
+
+
     <string name="label_already_spent_month">Spent This Month</string>
     <string name="label_already_spent_year">Spent This Year</string>
     <string name="label_left_to_spend_month">Left This Month</string>
     <string name="label_left_to_spend_year">Left This Year</string>
-    <string name="title_category_entry">Add category\n</string>
     <string name="label_category_name">Category name</string>
     <string name="label_spending_limit">Spending Limit</string>
     <string name="label_expense_type">Expense Type</string>
+
     <string name="content_description_toggle_dropdown">Toggle Dropdown</string>
+
+    <string name="info_no_data_found">No data found</string>
+    <string name="btn_remove">Remove</string>
 </resources>
