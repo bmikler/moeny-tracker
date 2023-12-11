@@ -62,7 +62,6 @@ fun CategoryEntryScreen(
     }
 
 
-
     Scaffold(
         topBar = {
             MoneyTrackerTopAppBar(

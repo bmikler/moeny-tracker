@@ -21,7 +21,7 @@ class ExpenseViewModel(
 ) : ViewModel() {
 
 
-    private val _uiState = MutableStateFlow(ExpenseUiState(sharedDateViewModel.date.toString(), mapOf()))
+    private val _uiState = MutableStateFlow(ExpenseUiState(sharedDateViewModel.date.toString()))
     val uiState: StateFlow<ExpenseUiState> = _uiState.asStateFlow()
 
     init {
@@ -60,8 +60,10 @@ class ExpenseViewModel(
                     )
                 }
 
+            val total = categoriesUiWithExpenses.map { it.key }.sumOf { it.alreadySpent }
+
             _uiState.update {
-                ExpenseUiState(sharedDateViewModel.date.getString(), categoriesUiWithExpenses)
+                ExpenseUiState(sharedDateViewModel.date.getString(), total.toString(), categoriesUiWithExpenses)
             }
         }
     }
@@ -75,7 +77,8 @@ class ExpenseViewModel(
 
 data class ExpenseUiState(
     val date: String,
-    val expensesByCategory: Map<CategoryUi, List<Expense>>
+    val expenseTotal: String = "",
+    val expensesByCategory: Map<CategoryUi, List<Expense>> = mapOf()
 )
 
 data class CategoryUi(

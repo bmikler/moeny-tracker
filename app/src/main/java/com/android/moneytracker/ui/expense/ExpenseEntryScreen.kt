@@ -1,6 +1,7 @@
 package com.android.moneytracker.ui.expense
 
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,10 +24,12 @@ import com.android.moneytracker.ui.MoneyTrackerTopAppBar
 import com.android.moneytracker.ui.navigation.NavigationDestination
 
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.android.moneytracker.infrastructure.AppViewModelProvider
 import com.android.moneytracker.model.Category
+import com.android.moneytracker.ui.category.toDetails
 import java.util.Currency
 import java.util.Locale
 
@@ -43,6 +46,7 @@ fun ExpenseEntryScreen(
     navigateBack: () -> Unit,
     canNavigateBack: Boolean = true,
 ) {
+
     Scaffold(
         topBar = {
             MoneyTrackerTopAppBar(
@@ -92,14 +96,20 @@ private fun ExpenseEntryBody(
         OutlinedTextField(
             value = entryDetails.description,
             onValueChange = { onEntryValueChange(entryDetails.copy(description = it, categoryId = category.id)) },
+            label = { Text(stringResource(id = R.string.label_expense_description)) },
             enabled = true,
+            modifier = Modifier.onFocusEvent { onEntryValueChange(entryDetails.copy(description = ""))  }
         )
 
         OutlinedTextField(
             value = entryDetails.value,
             onValueChange = {
-                onEntryValueChange(entryDetails.copy(value = it, categoryId = category.id))
+                onEntryValueChange(entryDetails.copy(
+                    value = it,
+                    categoryId = category.id
+                ))
             },
+            label = { Text(stringResource(id = R.string.label_expense_value)) },
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Decimal),
             trailingIcon = { Text(Currency.getInstance(Locale.getDefault()).symbol) },
             singleLine = true,

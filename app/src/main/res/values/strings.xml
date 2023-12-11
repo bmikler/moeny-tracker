@@ -19,4 +19,6 @@
 
     <string name="info_no_data_found">No data found</string>
     <string name="btn_remove">Remove</string>
+    <string name="label_expense_description">Description</string>
+    <string name="label_expense_value">Value</string>
 </resources>

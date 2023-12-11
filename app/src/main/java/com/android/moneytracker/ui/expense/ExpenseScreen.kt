@@ -1,5 +1,6 @@
 package com.android.moneytracker.ui.expense
 
+import Constants.CURRENCY_SYMBOL_UI
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -68,6 +69,7 @@ fun ExpenseScreen(
     ) { innerPadding ->
         ExpenseBody(
             date = uiState.date,
+            expenseTotal = uiState.expenseTotal,
             nextDate = { viewModel.nextDate() },
             previousDate = { viewModel.previousDate() },
             categoriesWithExpenses = uiState.expensesByCategory,
@@ -83,6 +85,7 @@ fun ExpenseScreen(
 @Composable
 fun ExpenseBody(
     date: String,
+    expenseTotal: String,
     nextDate: () -> Unit,
     previousDate: () -> Unit,
     categoriesWithExpenses: Map<CategoryUi, List<Expense>>,
@@ -91,22 +94,23 @@ fun ExpenseBody(
 ) {
 
 
-    Column(
-        modifier = modifier
-    ) {
+    LazyColumn(modifier = modifier) {
 
-        ExpenseNavigation(nextDate, previousDate, date)
-
-        LazyColumn {
-            items(categoriesWithExpenses.entries.toList(), key = { it.key.id }) { entry ->
-                ExpandableCategory(
-                    categoryUi = entry.key,
-                    expenses = entry.value,
-                    addExpense = addExpense
-                )
+        item { ExpenseNavigation(nextDate, previousDate, date) }
+        item {
+            Row (horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()){
+                Text(text = "Total: $expenseTotal $CURRENCY_SYMBOL_UI")
             }
         }
+        items(categoriesWithExpenses.entries.toList(), key = { it.key.id }) { entry ->
+            ExpandableCategory(
+                categoryUi = entry.key,
+                expenses = entry.value,
+                addExpense = addExpense
+            )
+        }
     }
+
 }
 
 
@@ -183,7 +187,7 @@ private fun CategoryHeader(
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(text = stringResource(R.string.label_already_spent_month))
-                Text(text = "${category.alreadySpent} PLN")
+                Text(text = "${category.alreadySpent} $CURRENCY_SYMBOL_UI")
             }
 
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -193,7 +197,7 @@ private fun CategoryHeader(
                     ExpenseType.MONTHLY -> Text(text = stringResource(R.string.label_left_to_spend_month))
                 }
 
-                Text(text = "${category.leftToSpent} PLN")
+                Text(text = "${category.leftToSpent} $CURRENCY_SYMBOL_UI")
 
             }
         }
@@ -207,11 +211,11 @@ private fun ExpenseList(
     expenses: List<Expense>
 ) {
 
-    LazyColumn {
-        items(expenses) { item ->
-            ExpenseItem(item.description, item.value)
-        }
+    Column {
+        expenses.forEach {  item ->
+            ExpenseItem(item.description, item.value)}
     }
+
 }
 
 @Composable
@@ -228,7 +232,7 @@ private fun ExpenseItem(
             .padding(12.dp)
     ) {
         Text(text = description)
-        Text(text = "$value PLN")
+        Text(text = "$value $CURRENCY_SYMBOL_UI")
     }
 }
 
