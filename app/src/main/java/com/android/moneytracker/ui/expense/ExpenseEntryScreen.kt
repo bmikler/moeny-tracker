@@ -97,8 +97,7 @@ private fun ExpenseEntryBody(
             value = entryDetails.description,
             onValueChange = { onEntryValueChange(entryDetails.copy(description = it, categoryId = category.id)) },
             label = { Text(stringResource(id = R.string.label_expense_description)) },
-            enabled = true,
-            modifier = Modifier.onFocusEvent { onEntryValueChange(entryDetails.copy(description = ""))  }
+            enabled = true
         )
 
         OutlinedTextField(
